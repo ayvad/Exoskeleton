@@ -1,34 +1,37 @@
+/*  Project: Exoskeleton
+ *  Projectgroup: MeH2.A1
+*/
 #include <Arduino_LSM6DS3.h>
 #include "BTS7960.h" //https://github.com/luisllamasbinaburo/Arduino-BTS7960
 #include <math.h>
 using namespace std;
 
 //Potmeter config
-#define maxAngleReal 180
-#define minAngleReal 0
-#define maxAnglePotmeter 818
-#define minAnglePotmeter 0 
+#define maxAngleReal 180      // the maximum angle of the knee in relation with the potmeter
+#define minAngleReal 0        // the minimum angle of the knee in relation with the potmeter
+#define maxAnglePotmeter 818  // the maximum angle of the potmeter in relation with the knee
+#define minAnglePotmeter 0    // the minimum angle of the potmeter in relation with the knee
 //Walking angles
-#define HOEK1 20
-#define HOEK2 0
-#define HOEK3 58
-#define HOEK4 0
+#define ANGLE1 20  // the angle of the knee at the first peak
+#define ANGLE2 0   // the angle of the knee between the peaks
+#define ANGLE3 58  // the angle of the knee at the second peak
+#define ANGLE4 0   // the angle of the knee at the end
 //Resetvalues
-#define REMMARGE 5
-#define FOUTMARGE 15
-#define RESETTIME 32767
+#define REMMARGE 5      //
+#define FOUTMARGE 15    //
+#define RESETTIME 32767 // 
 //Motorspeeds
-#define SLOW_SPEED 25
-#define FAST_SPEED 100
-#define ULTRA_SPEED 125
+#define SLOW_SPEED 25   // max 255   
+#define FAST_SPEED 100  // max 255
+#define ULTRA_SPEED 125 // max 255
 
 //pins
-#define gyroscope A0
-const uint8_t R_EN = 7;
-const uint8_t L_EN = 8;
-const uint8_t L_PWM = 5;
-const uint8_t R_PWM = 6;
-const int pinEmergencyBrake = 2;
+#define potmeter A0
+const uint8_t R_EN = 7;           //
+const uint8_t L_EN = 8;           //
+const uint8_t L_PWM = 5;          //
+const uint8_t R_PWM = 6;          //
+const int pinEmergencyBrake = 2;  //
 
 //Variables
 BTS7960 motorController(L_EN, R_EN, L_PWM, R_PWM);
@@ -42,7 +45,7 @@ int movement;
 enum movementDirection {up = 1, down = -1, still = 0};
 int lastAngle;
 
-void emergency(){
+void emergency(){                           // If the emergency brake is pushed
   motorController.Stop();
   motorController.Disable();
   Serial.println("Emergency brake!");
@@ -60,7 +63,7 @@ void setup() {
 
 void loop() {
   //potmeter
-  potAngle = map(analogRead(gyroscope), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal);
+  potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal);
   counter += 1;
   if (counter == RESETTIME) {
     lastAngle = potAngle ;
@@ -89,7 +92,7 @@ void loop() {
   // loopbeweging
   if (movement == up) {
     if (potAngle > lastAngle) {
-      if ((HOEK1 - potAngle) < REMMARGE) {
+      if ((ANGLE1 - potAngle) < REMMARGE) {
         // Eerste boog omhoog snel
         motorController.TurnRight(FAST_SPEED);
         Serial.println("Eerste boog omhoog snel");
@@ -100,7 +103,7 @@ void loop() {
         Serial.println("Eerste boog omhoog langzaam");
       }
       if (potAngle < lastAngle) {
-        if ((potAngle - HOEK2) < REMMARGE) {
+        if ((potAngle - ANGLE2) < REMMARGE) {
           // Eerste boog omlaag snel
           motorController.TurnLeft(FAST_SPEED);
           Serial.println("Eerste boog omlaag snel");
@@ -115,7 +118,7 @@ void loop() {
     }
     if (movement == down) {
       if (potAngle > lastAngle) {
-        if ((HOEK3 - potAngle) < REMMARGE) {
+        if ((ANGLE3 - potAngle) < REMMARGE) {
           //Tweede boog omhoog snel
           motorController.TurnRight(ULTRA_SPEED);
           Serial.println("Tweede boog omhoog snel");
@@ -127,7 +130,7 @@ void loop() {
         }
       }
       if (potAngle < lastAngle) {
-        if ((potAngle - HOEK4) < REMMARGE) {
+        if ((potAngle - ANGLE4) < REMMARGE) {
           //Tweede boog omlaag snel
           motorController.TurnLeft(ULTRA_SPEED);
           Serial.println("Tweede boog omlaag snel");

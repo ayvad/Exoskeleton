@@ -11,7 +11,7 @@ using namespace std;
 #define REMMARGE 5
 #define FOUTMARGE 15
 #define RESETTIME 4000000
-#define potOffset 106
+#define potOffset 105
 
 //pins
 const uint8_t R_EN = 7;
@@ -41,7 +41,7 @@ void loop() {
   //potmeter
   
   potAngleNonScale = map(analogRead(A0), 0, 1023, 180, 0) - potOffset;
-  potAngle = map(potAngleNonScale, 0, 63, 0, 90);
+  potAngle = map(potAngleNonScale, 0, 62, 0, 90);
   counter += 1;
   if (counter == RESETTIME) {
     lastAngle = potAngle ;

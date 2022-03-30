@@ -7,16 +7,16 @@
 using namespace std;
 
 //Potmeter config
-#define maxAngleReal 0      // the maximum angle of the knee in relation with the potmeter
-#define minAngleReal 180        // the minimum angle of the knee in relation with the potmeter
-#define maxAnglePotmeter 1023  // the maximum angle of the potmeter in relation with the knee
+#define maxAngleReal 0        // the maximum angle of the knee in relation with the potmeter
+#define minAngleReal 180      // the minimum angle of the knee in relation with the potmeter
+#define maxAnglePotmeter 1023 // the maximum angle of the potmeter in relation with the knee
 #define minAnglePotmeter 0    // the minimum angle of the potmeter in relation with the knee
-#define potOffset 106
+#define potOffset 105         // the offset of the potmeter
 
-#define maxPotAngle 63
-#define minPotAngle 0
-#define maxRealAngle 90
-#define minRealAngle 0
+#define maxPotAngle 62        // the maximum angle of the scaled potmeter
+#define minPotAngle 0         // the minimum angle of the scaled potmeter
+#define maxRealAngle 90       // the real maximum angle
+#define minRealAngle 0        // the real minimum angle
 
 //Walking angles
 #define ANGLE1 20  // the angle of the knee at the first peak
@@ -28,9 +28,9 @@ using namespace std;
 #define FOUTMARGE 15    //
 #define RESETTIME 32767 // 
 //Motorspeeds
-#define SLOW_SPEED 25   // max 255   
-#define FAST_SPEED 100  // max 255
-#define ULTRA_SPEED 125 // max 255
+#define SLOW_SPEED 255   // max 255   
+#define FAST_SPEED 255  // max 255
+#define ULTRA_SPEED 255 // max 255
 
 //pins
 #define potmeter A0

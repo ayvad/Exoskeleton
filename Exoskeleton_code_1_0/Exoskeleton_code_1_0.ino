@@ -1,5 +1,5 @@
 /*  Project: Exoskeleton
- *  Projectgroup: MeH2.A1
+    Projectgroup: MeH2.A1
 */
 #include <Arduino_LSM6DS3.h>
 #include "BTS7960.h" //https://github.com/luisllamasbinaburo/Arduino-BTS7960
@@ -47,11 +47,19 @@ int movement;
 enum movementDirection {up = 1, down = -1, still = 0};
 int lastAngle;
 
-void emergency(){                           // If the emergency brake is pushed
+
+
+
+void emergency() {                          // If the emergency brake is pushed
   motorController.Stop();
   motorController.Disable();
   Serial.println("Emergency brake!");
-  while(digitalRead(pinEmergencyBrake)){};
+  while (digitalRead(pinEmergencyBrake)) {};
+}
+
+void endSwitch(){
+  motorController.Stop();
+  delay(100);
 }
 
 void setup() {
@@ -59,7 +67,12 @@ void setup() {
   IMU.begin();
   motorController.Enable();
   pinMode(pinEmergencyBrake, INPUT);
+  pinMode(endSwitchUp, INPUT);
+  pinMode(endSwitchDown, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(endSwitchUp), endSwitch, FALLING);
+  attachInterrupt(digitalPinToInterrupt(endSwitchDown), endSwitch, FALLING);
+  
   Serial.println("Initialisation done");
 }
 
@@ -91,6 +104,10 @@ void loop() {
       Serial.println("beweging: 0");
     }
   }
+
+  //Serial com
+  Serial.println(potAngle);
+
   // loopbeweging
   if (movement == up) {
     if (potAngle > lastAngle) {

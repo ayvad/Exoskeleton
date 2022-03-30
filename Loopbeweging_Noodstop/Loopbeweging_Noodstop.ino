@@ -7,10 +7,17 @@
 using namespace std;
 
 //Potmeter config
-#define maxAngleReal 180      // the maximum angle of the knee in relation with the potmeter
-#define minAngleReal 0        // the minimum angle of the knee in relation with the potmeter
-#define maxAnglePotmeter 818  // the maximum angle of the potmeter in relation with the knee
+#define maxAngleReal 0      // the maximum angle of the knee in relation with the potmeter
+#define minAngleReal 180        // the minimum angle of the knee in relation with the potmeter
+#define maxAnglePotmeter 1023  // the maximum angle of the potmeter in relation with the knee
 #define minAnglePotmeter 0    // the minimum angle of the potmeter in relation with the knee
+#define potOffset 106
+
+#define maxPotAngle 63
+#define minPotAngle 0
+#define maxRealAngle 90
+#define minRealAngle 0
+
 //Walking angles
 #define ANGLE1 20  // the angle of the knee at the first peak
 #define ANGLE2 0   // the angle of the knee between the peaks
@@ -37,6 +44,7 @@ const int endSwitchDown = 4;      //
 
 //Variables
 BTS7960 motorController(L_EN, R_EN, L_PWM, R_PWM);
+int potAngleNonScale;
 int potAngle;
 int counter = 0;
 int angleZ = 0;
@@ -65,7 +73,8 @@ void setup() {
 
 void loop() {
   //potmeter
-  potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal);
+  potAngleNonScale = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
+  potAngle = map(potAngleNonScale, minPotAngle, maxPotAngle, minRealAngle, maxRealAngle);
   counter += 1;
   if (counter == RESETTIME) {
     lastAngle = potAngle ;

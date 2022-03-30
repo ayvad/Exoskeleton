@@ -11,6 +11,7 @@ using namespace std;
 #define REMMARGE 5
 #define FOUTMARGE 15
 #define RESETTIME 4000000
+#define potOffset 106
 
 //pins
 const uint8_t R_EN = 7;
@@ -20,6 +21,7 @@ const uint8_t R_PWM = 6;
 
 BTS7960 motorController(L_EN, R_EN, L_PWM, R_PWM);
 
+int potAngleNonScale;
 int potAngle;
 int counter = 0;
 int angleZ = 0;
@@ -37,7 +39,9 @@ void setup() {
 
 void loop() {
   //potmeter
-  potAngle = map(analogRead(A0), 0, 818, 0, 180);
+  
+  potAngleNonScale = map(analogRead(A0), 0, 1023, 180, 0) - potOffset;
+  potAngle = map(potAngleNonScale, 0, 63, 0, 90);
   counter += 1;
   if (counter == RESETTIME) {
     lastAngle = potAngle ;

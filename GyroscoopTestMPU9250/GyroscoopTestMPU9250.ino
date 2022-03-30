@@ -1,8 +1,13 @@
 #include "MPU9250.h"
 
+const int power5V = 12;
+
+
 MPU9250 mpu;
 
 void setup() {
+    pinMode(power5V, OUTPUT);
+    digitalWrite(power5V, HIGH);
     Serial.begin(9600);
     Wire.begin();
     delay(2000);

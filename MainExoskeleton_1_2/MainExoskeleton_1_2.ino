@@ -1,5 +1,5 @@
 /*  Project: Exoskeleton
- *  Projectgroup: MeH2.A1
+    Projectgroup: MeH2.A1
 */
 #include <Arduino_LSM6DS3.h>
 #include "BTS7960.h" //https://github.com/luisllamasbinaburo/Arduino-BTS7960
@@ -55,12 +55,15 @@ int angleNeg = 0;
 int movement;
 enum movementDirection {up = 1, down = -1, still = 0};
 int lastAngle;
+int Countie;
 
-void emergency(){                           // If the emergency brake is pushed
+void emergency() {                          // If the emergency brake is pushed
   motorController.Stop();
   motorController.Disable();
   Serial.println("Emergency brake!");
-  while(digitalRead(pinEmergencyBrake)){delay(100);};
+  while (digitalRead(pinEmergencyBrake)) {
+    delay(100);
+  };
 }
 
 void setup() {
@@ -70,6 +73,7 @@ void setup() {
   pinMode(pinEmergencyBrake, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, CHANGE);
   Serial.println("Initialisation done");
+  Countie = 1;
 }
 
 void loop() {
@@ -102,8 +106,41 @@ void loop() {
     }
   }
   // loopbeweging
+  if (movement == down) {
+    if (Countie == 1) {
+      if ((ANGLE3 - potAngle) < REMMARGE) {
+        //Tweede boog omhoog snel
+        motorController.TurnRight(ULTRA_SPEED);
+        Serial.println("Tweede boog omhoog snel");
+      }
+      else {
+        //Tweede boog omhoog langzaam
+        motorController.TurnRight(SLOW_SPEED);
+        Serial.println("Tweede boog omhoog langzaam");
+      if(potAngle > 58){
+        Countie = 2;
+      }
+      }
+    }
+    if (Countie  == 2) {
+      if ((potAngle - ANGLE4) < REMMARGE) {
+        //Tweede boog omlaag snel
+        motorController.TurnLeft(ULTRA_SPEED);
+        Serial.println("Tweede boog omlaag snel");
+      }
+      else {
+        //Tweede boog omlaag langzaam
+        motorController.TurnLeft(SLOW_SPEED);
+        Serial.println("Tweede boog omlaag langzaam");
+        if(potAngle <5){
+        Countie = 1;
+      }
+      }
+    }
+  }
   if (movement == up) {
-    if (potAngle > lastAngle) {
+
+    if (Countie == 1) {
       if ((ANGLE1 - potAngle) < REMMARGE) {
         // Eerste boog omhoog snel
         motorController.TurnRight(FAST_SPEED);
@@ -113,46 +150,27 @@ void loop() {
         //Eerste boog omhoog langzaam
         motorController.TurnRight(SLOW_SPEED);
         Serial.println("Eerste boog omhoog langzaam");
+        if(potAngle > 20){
+        Countie = 2;
       }
-      if (potAngle < lastAngle) {
-        if ((potAngle - ANGLE2) < REMMARGE) {
-          // Eerste boog omlaag snel
-          motorController.TurnLeft(FAST_SPEED);
-          Serial.println("Eerste boog omlaag snel");
-
-        }
-        else {
-          // Eerste boog omlaag langzaam
-          motorController.TurnLeft(SLOW_SPEED);
-          Serial.println("Eerste boog omlaag snel");
-        }
       }
     }
-    if (movement == down) {
-      if (potAngle > lastAngle) {
-        if ((ANGLE3 - potAngle) < REMMARGE) {
-          //Tweede boog omhoog snel
-          motorController.TurnRight(ULTRA_SPEED);
-          Serial.println("Tweede boog omhoog snel");
-        }
-        else {
-          //Tweede boog omhoog langzaam
-          motorController.TurnRight(SLOW_SPEED);
-          Serial.println("Tweede boog omhoog langzaam");
-        }
+    if (Countie == 2) {
+      if ((potAngle - ANGLE2) < REMMARGE) {
+        // Eerste boog omlaag snel
+        motorController.TurnLeft(FAST_SPEED);
+        Serial.println("Eerste boog omlaag snel");
+
       }
-      if (potAngle < lastAngle) {
-        if ((potAngle - ANGLE4) < REMMARGE) {
-          //Tweede boog omlaag snel
-          motorController.TurnLeft(ULTRA_SPEED);
-          Serial.println("Tweede boog omlaag snel");
-        }
-        else {
-          //Tweede boog omlaag langzaam
-          motorController.TurnLeft(SLOW_SPEED);
-          Serial.println("Tweede boog omlaag langzaam");
-        }
+      else {
+        // Eerste boog omlaag langzaam
+        motorController.TurnLeft(SLOW_SPEED);
+        Serial.println("Eerste boog omlaag snel");
+        if(potAngle < 5){
+        Countie = 1;
+      }
       }
     }
   }
+
 }

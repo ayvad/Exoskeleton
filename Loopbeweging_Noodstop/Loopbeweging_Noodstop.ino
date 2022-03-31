@@ -25,8 +25,9 @@ using namespace std;
 #define ANGLE4 0   // the angle of the knee at the end
 //Resetvalues
 #define REMMARGE 5      //
-#define FOUTMARGE 15    //
-#define RESETTIME 32767 // 
+#define FOUTMARGE 0    //
+#define RESETTIME 32767 //
+#define GYROSAMPLERATE 52 //
 //Motorspeeds
 #define SLOW_SPEED 255   // max 255   
 #define FAST_SPEED 255  // max 255
@@ -59,7 +60,7 @@ void emergency(){                           // If the emergency brake is pushed
   motorController.Stop();
   motorController.Disable();
   Serial.println("Emergency brake!");
-  while(digitalRead(pinEmergencyBrake)){};
+  while(digitalRead(pinEmergencyBrake)){delay(100);};
 }
 
 void setup() {
@@ -83,7 +84,7 @@ void loop() {
   //Gyroscope
   if (IMU.gyroscopeAvailable()) {
     IMU.readGyroscope(x, y, z);
-    angleZ += z / IMU.gyroscopeSampleRate();
+    angleZ += z / GYROSAMPLERATE;
     anglePos = angleZ - FOUTMARGE;
     angleNeg = angleZ + FOUTMARGE;
 

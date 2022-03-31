@@ -9,7 +9,7 @@ using namespace std;
 #define HOEK3 58
 #define HOEK4 0
 #define REMMARGE 5
-#define FOUTMARGE 15
+#define FOUTMARGE 0
 #define RESETTIME 4000000
 #define potOffset 105
 
@@ -50,7 +50,7 @@ void loop() {
   //Gyroscope
   if (IMU.gyroscopeAvailable()) {
     IMU.readGyroscope(x, y, z);
-    angleZ += z / 104;
+    angleZ += z / 52;
     anglePos = angleZ - FOUTMARGE;
     angleNeg = angleZ + FOUTMARGE;
 

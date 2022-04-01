@@ -6,6 +6,8 @@
 #include <math.h>
 using namespace std;
 
+#define totaleTijd 2000
+
 //Potmeter config
 #define maxAngleReal 0        // the maximum angle of the knee in relation with the potmeter
 #define minAngleReal 180      // the minimum angle of the knee in relation with the potmeter
@@ -32,8 +34,8 @@ using namespace std;
 #define GYROSAMPLERATE 52 //
 //Motorspeeds
 #define SLOW_SPEED 100   // max 255   
-#define FAST_SPEED 100  // max 255
-#define ULTRA_SPEED 100 // max 255
+#define FAST_SPEED 200  // max 255
+#define ULTRA_SPEED 255 // max 255
 
 //pins
 #define potmeter A0
@@ -107,72 +109,11 @@ void loop() {
       Serial.println("beweging: 0");
     }
   }
-  // loopbeweging
-  if (movement == down) {
-    if (walkingAnglePosition == 1) {
-      if ((ANGLE3 - potAngle) < REMMARGE) {
-        //Tweede boog omhoog snel
-        motorController.TurnRight(ULTRA_SPEED);
-        Serial.println("Tweede boog omhoog snel");
-      }
-      else {
-        //Tweede boog omhoog langzaam
-        motorController.TurnRight(SLOW_SPEED);
-        Serial.println("Tweede boog omhoog langzaam");
-      if(potAngle > ANGLE3){
-        walkingAnglePosition = 2;
-      }
-      }
-    }
-    if (walkingAnglePosition  == 2) {
-      if ((potAngle - ANGLE4) < REMMARGE) {
-        //Tweede boog omlaag snel
-        motorController.TurnLeft(ULTRA_SPEED);
-        Serial.println("Tweede boog omlaag snel");
-      }
-      else {
-        //Tweede boog omlaag langzaam
-        motorController.TurnLeft(SLOW_SPEED);
-        Serial.println("Tweede boog omlaag langzaam");
-        if(potAngle < returnAngle){
-        walkingAnglePosition = 1;
-      }
-      }
-    }
-  }
   if (movement == up) {
-
-    if (walkingAnglePosition == 1) {
-      if ((ANGLE1 - potAngle) < REMMARGE) {
-        // Eerste boog omhoog snel
-        motorController.TurnRight(FAST_SPEED);
-        Serial.println("Eerste boog omhoog snel");
-      }
-      else {
-        //Eerste boog omhoog langzaam
-        motorController.TurnRight(SLOW_SPEED);
-        Serial.println("Eerste boog omhoog langzaam");
-        if(potAngle > ANGLE1){
-        walkingAnglePosition = 2;
-      }
-      }
-    }
-    if (walkingAnglePosition == 2) {
-      if ((potAngle - ANGLE2) < REMMARGE) {
-        // Eerste boog omlaag snel
-        motorController.TurnLeft(FAST_SPEED);
-        Serial.println("Eerste boog omlaag snel");
-
-      }
-      else {
-        // Eerste boog omlaag langzaam
-        motorController.TurnLeft(SLOW_SPEED);
-        Serial.println("Eerste boog omlaag snel");
-        if(potAngle < returnAngle){
-        walkingAnglePosition = 1;
-      }
-      }
-    }
+    motorController.TurnRight(200);
+    delay(180);
+    motorController.TurnLeft(255);
+    delay(180);
+    motorController.Stop();
   }
-
 }

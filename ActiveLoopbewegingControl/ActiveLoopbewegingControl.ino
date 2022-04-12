@@ -16,10 +16,10 @@ using namespace std;
 #define potOffset 0           // the offset of the potmeter
 
 //Walking angles
-#define ANGLE1 5  // the angle of the knee at the first peak
-#define ANGLE2 0   // the angle of the knee between the peaks
-#define ANGLE3 40  // the angle of the knee at the second peak
-#define ANGLE4 0   // the angle of the knee at the end
+#define ANGLE1 5    // the angle of the knee at the first peak
+#define ANGLE2 0    // the angle of the knee between the peaks
+#define ANGLE3 40   // the angle of the knee at the second peak
+#define ANGLE4 0    // the angle of the knee at the end
 
 #define returnAngle 5
 //Resetvalues
@@ -62,8 +62,10 @@ int lastAngle;
 int walkingAnglePosition;
 int state;
 
-void calcPotAngle() {
+int calcPotAngle() {
   potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
+  Serial.println(potAngle);
+  return potAngle;
 }
 
 
@@ -103,9 +105,6 @@ void setup() {
 }
 
 void loop() {
-  //potmeter
-  calcPotAngle();
-
   //Gyroscope
   if (IMU.gyroscopeAvailable()) {
     IMU.readGyroscope(x, y, z);
@@ -123,6 +122,7 @@ void loop() {
     }
     else {
       movement = still;
+      counter = 1;
       Serial.println("beweging: 0");
     }
   }
@@ -135,21 +135,16 @@ void loop() {
     }; //Toggle state
   }
 
-  //emergency();
-  //Serial.println("Walk movement");
-  if (movement == up) {
+  
+  if ((movement == up)and(counter == 1)) {
     motorController.TurnRight(SLOW_SPEED);
-    Serial.println(potAngle);
-    if (potAngle > ANGLE3) {
-      IMU.end();
-      while (potAngle > ANGLE1) {
-        movement = still;
+    if (calcPotAngle() > ANGLE3) {
+      //IMU.end();
+      while (calcPotAngle() > ANGLE1) {
+        //movement = still;
         motorController.TurnLeft(MAX_SPEED);
-        Serial.println(potAngle);
-        calcPotAngle();
+        counter = 0;
       }
-      delay(150);
-      IMU.begin();
     }
   }
 }

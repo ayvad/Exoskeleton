@@ -70,8 +70,7 @@ int calcPotAngle() {
 void emergency() {                          // If the emergency brake is pushed
   motorController.Stop();
   motorController.Disable();
-  Serial.println("Emergency brake!");
-  Serial.println(digitalRead(pinEmergencyBrake));
+  Serial.println("EMERGENCY BRAKE!");
   while (!digitalRead(pinEmergencyBrake)) {
     delay(100);
   };
@@ -80,8 +79,10 @@ void emergency() {                          // If the emergency brake is pushed
 void changeState() {
   if (state == idle) {
     state = active;
+    Serial.println("State: ACTIVE");
   } else {
     state = idle;
+    Serial.println("State: IDLE");
   }; //Toggle state
   while (digitalRead(pinStartButton)) {
     delay(1000);
@@ -96,7 +97,6 @@ void setup() {
   pinMode(pinEmergencyBrake, INPUT);
   pinMode(pinStartButton, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, LOW);
-  //  attachInterrupt(digitalPinToInterrupt(pinStartButton), changeState, RISING);
   walkingAnglePosition = 1;
   state = idle;
   Serial.println("Initialisation done");

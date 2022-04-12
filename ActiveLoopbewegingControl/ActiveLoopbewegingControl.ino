@@ -64,10 +64,8 @@ int state;
 
 int calcPotAngle() {
   potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
-  Serial.println(potAngle);
   return potAngle;
 }
-
 
 void emergency() {                          // If the emergency brake is pushed
   motorController.Stop();
@@ -114,29 +112,28 @@ void loop() {
 
     if (angleNeg < 0) {
       movement = down;
-      Serial.println("beweging: -1");
     }
     else if (anglePos > 0) {
       movement = up;
-      Serial.println("beweging: 1");
     }
     else {
       movement = still;
       counter = 1;
-      Serial.println("beweging: 0");
     }
   }
-  Serial.println(digitalRead(pinStartButton));
-  if (!digitalRead(pinStartButton)) {
+  
+  if (digitalRead(pinStartButton)) {
     if (state == idle) {
       state = active;
     } else {
       state = idle;
     }; //Toggle state
+    delay(400);
+    Serial.println(state);
   }
 
   
-  if ((movement == up)and(counter == 1)) {
+  if ((movement == up)and(counter == 1)and(state == active)) {
     motorController.TurnRight(SLOW_SPEED);
     if (calcPotAngle() > ANGLE3) {
       //IMU.end();

@@ -10,15 +10,10 @@ using namespace std;
 
 //Potmeter config
 #define maxAngleReal 0        // the maximum angle of the knee in relation with the potmeter
-#define minAngleReal 180      // the minimum angle of the knee in relation with the potmeter
-#define maxAnglePotmeter 1023 // the maximum angle of the potmeter in relation with the knee
-#define minAnglePotmeter 0    // the minimum angle of the potmeter in relation with the knee
-#define potOffset 105         // the offset of the potmeter
-
-#define maxPotAngle 62        // the maximum angle of the scaled potmeter
-#define minPotAngle 0         // the minimum angle of the scaled potmeter
-#define maxRealAngle 90       // the real maximum angle
-#define minRealAngle 0        // the real minimum angle
+#define minAngleReal 90       // the minimum angle of the knee in relation with the potmeter
+#define maxAnglePotmeter 557  // the maximum angle of the potmeter in relation with the knee
+#define minAnglePotmeter 211  // the minimum angle of the potmeter in relation with the knee
+#define potOffset 0           // the offset of the potmeter
 
 //Walking angles
 #define ANGLE1 20  // the angle of the knee at the first peak
@@ -102,8 +97,7 @@ void setup() {
 
 void loop() {
   //potmeter
-  potAngleNonScale = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
-  potAngle = map(potAngleNonScale, minPotAngle, maxPotAngle, minRealAngle, maxRealAngle);
+  potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
   counter += 1;
   if (counter == RESETTIME) {
     lastAngle = potAngle ;
@@ -140,14 +134,13 @@ void loop() {
   }
 
   //emergency();
-  if (state == active) {
-    if (movement == up) {
-      Serial.println("Walk movement");
-      motorController.TurnRight(FAST_SPEED);
-      delay(looptijd);
-      motorController.TurnLeft(MAX_SPEED);
-      delay(looptijd);
-      motorController.Stop();
-    }
+  Serial.println("Walk movement");
+  
+  motorController.TurnRight(MAX_SPEED);
+  Serial.println(potAngle);
+  if (potAngle > 58) {
+    motorController.Stop();
+    motorController.TurnLeft(MAX_SPEED);
+    delay(5000);
   }
 }

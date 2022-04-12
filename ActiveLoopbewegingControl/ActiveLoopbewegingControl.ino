@@ -16,9 +16,9 @@ using namespace std;
 #define potOffset 0           // the offset of the potmeter
 
 //Walking angles
-#define ANGLE1 5    // the angle of the knee at the first peak
+#define ANGLE1 8    // the angle of the knee at the first peak
 #define ANGLE2 0    // the angle of the knee between the peaks
-#define ANGLE3 40   // the angle of the knee at the second peak
+#define ANGLE3 35   // the angle of the knee at the second peak
 #define ANGLE4 0    // the angle of the knee at the end
 
 #define returnAngle 5
@@ -97,9 +97,9 @@ void setup() {
   pinMode(pinStartButton, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, LOW);
   //  attachInterrupt(digitalPinToInterrupt(pinStartButton), changeState, RISING);
-  Serial.println("Initialisation done");
   walkingAnglePosition = 1;
   state = idle;
+  Serial.println("Initialisation done");
 }
 
 void loop() {
@@ -121,7 +121,7 @@ void loop() {
       counter = 1;
     }
   }
-  
+
   if (digitalRead(pinStartButton)) {
     if (state == idle) {
       state = active;
@@ -129,15 +129,13 @@ void loop() {
       state = idle;
     }; //Toggle state
     delay(400);
-    Serial.println(state);
   }
 
-  
-  if ((movement == up)and(counter == 1)and(state == active)) {
+  if ((movement == up) and (counter == 1) and (state == active)) {
     motorController.TurnRight(SLOW_SPEED);
     if (calcPotAngle() > ANGLE3) {
       //IMU.end();
-      while (calcPotAngle() > ANGLE1) {
+      while ((calcPotAngle() > ANGLE1) and digitalRead(endSwitchDown)) {
         //movement = still;
         motorController.TurnLeft(MAX_SPEED);
         counter = 0;

@@ -71,8 +71,8 @@ void emergency() {                          // If the emergency brake is pushed
   MC.Stop();
   MC.Disable();
   Serial.println("EMERGENCY BRAKE!");
-  delay(1000);
 }
+
 
 void changeState() {
   if (state == idle) {
@@ -98,7 +98,7 @@ void setup() {
   pinMode(pinStartButton, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, LOW);
   walkingAnglePosition = 1;
-  state = active;
+  state = idle;
   Serial.println("Initialisation done");
   Serial.println("State: IDLE");
 }
@@ -128,13 +128,6 @@ void loop() {
   if (digitalRead(pinStartButton)) {
     changeState();
   }
-
-  //  if (!digitalRead(endSwitchDown)){
-  //    Serial.println("Endswitch Down = TRUE");
-  //    }
-  //  if (!digitalRead(endSwitchUp)){
-  //    Serial.println("Endswitch Up = TRUE");
-  //    }
 
   if ((movement == up) and (counter == 1) and (state == active)) {
     MC.TurnLeft(SLOW_SPEED);

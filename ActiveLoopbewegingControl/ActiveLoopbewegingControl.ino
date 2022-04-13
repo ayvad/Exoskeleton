@@ -47,7 +47,7 @@ const int endSwitchDown = 4;      //
 const int looptijd = totaleTijd / 8;
 
 //Variables
-BTS7960 motorController(L_EN, R_EN, L_PWM, R_PWM);
+BTS7960 MC(L_EN, R_EN, L_PWM, R_PWM);
 int potAngleNonScale;
 int potAngle;
 int counter = 0;
@@ -62,18 +62,16 @@ int lastAngle;
 int walkingAnglePosition;
 int state;
 
-int calcPotAngle() {
+void calcPotAngle() {
   potAngle = map(analogRead(potmeter), minAnglePotmeter, maxAnglePotmeter, minAngleReal, maxAngleReal) - potOffset;
-  return potAngle;
+  //return potAngle;
 }
 
 void emergency() {                          // If the emergency brake is pushed
-  motorController.Stop();
-  motorController.Disable();
+  MC.Stop();
+  MC.Disable();
   Serial.println("EMERGENCY BRAKE!");
-  while (!digitalRead(pinEmergencyBrake)) {
-    delay(100);
-  };
+  delay(1000);
 }
 
 void changeState() {
@@ -83,23 +81,26 @@ void changeState() {
   } else {
     state = idle;
     Serial.println("State: IDLE");
+    MC.Stop();
   }; //Toggle state
-  while (digitalRead(pinStartButton)) {
-    delay(1000);
-  };
+  delay(500);
 }
 
 void setup() {
   state = startup;
   Serial.begin(9600);
+  Serial.println("State: STARTUP");
   IMU.begin();
-  motorController.Enable();
+  MC.Enable();
+  pinMode(endSwitchDown, INPUT);
+  pinMode(endSwitchUp, INPUT);
   pinMode(pinEmergencyBrake, INPUT);
-  pinMode(pinStartButton, INPUT);
+  pinMode(pinStartButton, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(pinEmergencyBrake), emergency, LOW);
   walkingAnglePosition = 1;
-  state = idle;
+  state = active;
   Serial.println("Initialisation done");
+  Serial.println("State: IDLE");
 }
 
 void loop() {
@@ -112,9 +113,11 @@ void loop() {
 
     if (angleNeg < 0) {
       movement = down;
+      //Serial.println("movement: DOWN");
     }
     else if (anglePos > 0) {
       movement = up;
+      //Serial.println("movement: UP");
     }
     else {
       movement = still;
@@ -123,21 +126,23 @@ void loop() {
   }
 
   if (digitalRead(pinStartButton)) {
-    if (state == idle) {
-      state = active;
-    } else {
-      state = idle;
-    }; //Toggle state
-    delay(400);
+    changeState();
   }
 
+  //  if (!digitalRead(endSwitchDown)){
+  //    Serial.println("Endswitch Down = TRUE");
+  //    }
+  //  if (!digitalRead(endSwitchUp)){
+  //    Serial.println("Endswitch Up = TRUE");
+  //    }
+
   if ((movement == up) and (counter == 1) and (state == active)) {
-    motorController.TurnRight(SLOW_SPEED);
-    if (calcPotAngle() > ANGLE3) {
-      //IMU.end();
-      while ((calcPotAngle() > ANGLE1) and digitalRead(endSwitchDown)) {
-        //movement = still;
-        motorController.TurnLeft(MAX_SPEED);
+    MC.TurnLeft(SLOW_SPEED);
+    calcPotAngle();
+    if (potAngle > ANGLE3) {
+      while ((potAngle > ANGLE1)) {
+        MC.TurnRight(MAX_SPEED);
+        calcPotAngle();
         counter = 0;
       }
     }

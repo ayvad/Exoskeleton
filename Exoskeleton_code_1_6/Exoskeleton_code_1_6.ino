@@ -16,10 +16,10 @@ using namespace std;
 #define potOffset 0           // the offset of the potmeter
 
 //Walking angles
-#define ANGLE1 8    // the angle of the knee at the first peak
-#define ANGLE2 0    // the angle of the knee between the peaks
-#define ANGLE3 35   // the angle of the knee at the second peak
-#define ANGLE4 0    // the angle of the knee at the end
+#define ANGLEDOWN 8    // the angle of the knee at the first peak
+#define MINANGLE 0    // the angle of the knee between the peaks
+#define ANGLEUP 30   // the angle of the knee at the second peak
+#define MAXANGLE 35    // the angle of the knee at the end
 
 #define returnAngle 5
 //Resetvalues
@@ -108,11 +108,12 @@ void loop() {
 
     if (angleNeg < 0) {
       movement = down;
-      //Serial.println("movement: DOWN");
+      counter = 1;
+      Serial.println("movement: DOWN");
     }
     else if (anglePos > 0) {
       movement = up;
-      //Serial.println("movement: UP");
+      Serial.println("movement: UP");
     }
     else {
       movement = still;
@@ -124,13 +125,28 @@ void loop() {
     changeState();
   }
 
-  if ((movement == up) and (counter == 1) and (state == active)) {
-    MC.TurnLeft(SLOW_SPEED);
-    if (calcPotAngle() > ANGLE3) {
-      while ((calcPotAngle() > ANGLE1)) {
+  if (!digitalRead(endSwitchUp)){
+    MC.Stop();
+    Serial.println("EndSwitchUP is pressed");
+  }
+  if (!digitalRead(endSwitchDown)){
+    MC.Stop();
+    Serial.println("EndSwitchDown is pressed");
+  }  
+
+  if ((movement != still) and (state == active)) {
+    MC.TurnLeft(FAST_SPEED);
+    if (calcPotAngle() > ANGLEUP) {
+      while ((calcPotAngle() > ANGLEDOWN)) {
         MC.TurnRight(MAX_SPEED);
         counter = 0;
       }
     }
   }
+  if ((calcPotAngle() > MAXANGLE) and (state == active)){
+    MC.TurnRight(FAST_SPEED);
+  }
+//  if ((counter == 0) and (calcPotAngle() < ANGLEDOWN)){
+//    MC.Stop();
+//  }
 }
